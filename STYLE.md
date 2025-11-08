@@ -21,3 +21,4 @@
 * Innovate as much as possible.
 * Pave the way for future features, plugin systems?
 * Programmers are egotistical because they are annoyed with fixing other peoples poorly written code.
+* Things like PEP8 are a great thing, lets have more of that.
