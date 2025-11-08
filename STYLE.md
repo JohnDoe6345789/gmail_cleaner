@@ -17,3 +17,4 @@
 * Remove duplicate code from this repo.
 * Make everything well and good and proper, people have to read this stuff.
 * All usual standard files (varies from language to language) - README.md, LICENCE.md, setup.py, requirements.txt, run.sh, run.bat, setup.sh, setup.bat
+* This is a not for profit research project intended for personal use - But I try to put a MIT licence on it so you can do what you wish.
