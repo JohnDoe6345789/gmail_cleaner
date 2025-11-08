@@ -307,7 +307,7 @@ tool_py = _join(
         "        Case('colon_if', 'if True\\n    pass',",
         "             'if True:\\n    pass\\n'),",
         "        Case('paren', 'x = (1+2\\n', 'x = (1+2)\\n'),",
-        "        Case('triple', \"s = '''abc\\n\", \"s = '''abc'''\\n\"),",
+        "                Case('triple', "s = '''abc\n", "s = '''abc'''\n"),",
         "        Case('single', \"s = 'a\\n\", \"s = 'a'\\n\"),",
         "        Case('eofnl', 'x=1', 'x=1\\n'),",
         "    )",
