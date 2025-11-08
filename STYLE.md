@@ -19,3 +19,4 @@
 * All usual standard files (varies from language to language) - README.md, LICENCE.md, setup.py, requirements.txt, run.sh, run.bat, setup.sh, setup.bat
 * This is a not for profit research project intended for personal use - But I try to put a MIT licence on it so you can do what you wish.
 * Innovate as much as possible.
+* Pave the way for future features, plugin systems?
