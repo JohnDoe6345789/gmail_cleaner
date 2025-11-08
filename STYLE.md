@@ -20,3 +20,4 @@
 * This is a not for profit research project intended for personal use - But I try to put a MIT licence on it so you can do what you wish.
 * Innovate as much as possible.
 * Pave the way for future features, plugin systems?
+* Programmers are egotistical because they are annoyed with fixing other peoples poorly written code.
