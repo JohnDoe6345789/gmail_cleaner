@@ -12,7 +12,7 @@
 * Leave nothing undocumented.
 * Leave no code untested.
 * Put test result output in its own markdown file.
-* Don't make folders in the project, create a SINGLE FILE project structure python codegen. Makes it easy to paste it into a AI chatbot.
+* Don't make folders in the project, create a SINGLE FILE project structure python codegen. Makes it easy to paste it into a AI chatbot. Single file codegen outputs all files in project.
 * Project as it is might not fit this guide, fix it.
 * Remove duplicate code from this repo.
 * Make everything well and good and proper, people have to read this stuff.
