@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Codegen for a tiny, pure Python syntax repair toolkit.
-- Generates two files:
-  1) py_syntax_repair_tool.py   (the tool)
-  2) test_py_syntax_repair_tool.py (unit tests, unittest stdlib)
+- Generates two files inside ./py-syntax-repair/ :
+  1) py_syntax_repair_tool.py        (the tool)
+  2) test_py_syntax_repair_tool.py   (unit tests, unittest stdlib)
 - All functions ≤10 lines, 79 cols, mypy-friendly typing.
 - Usage: python generate_py_syntax_repair_tool.py
 """
@@ -15,18 +15,21 @@ from typing import Iterable, List
 
 # ------------------------------- Utilities -------------------------------- #
 
+ROOT = Path("py-syntax-repair")
+
+
 def _w(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
 
 
 def _p(name: str) -> Path:
-    return Path(name)
+    return ROOT / name
 
 
 def _emit(name: str, content: str) -> None:
     _w(_p(name), content)
-    print(f"✓ Wrote {name}")
+    print(f"✓ Wrote {ROOT / name}")
 
 
 def _join(lines: Iterable[str]) -> str:
@@ -57,7 +60,7 @@ tool_py = _join(
         "import sys",
         "from dataclasses import dataclass",
         "from pathlib import Path",
-        "from typing import Callable, Iterable, Iterator, List, Optional,",
+        "from typing import Callable, Iterable, Iterator, List, Optional",
         "from typing import Sequence, Tuple",
         "",
         "# ---------------------------- Data structs ---------------------------- #",
@@ -116,8 +119,8 @@ tool_py = _join(
         "PAIRS = {'(': ')', '[': ']', '{': '}'}",
         "OPENERS = ''.join(PAIRS.keys())",
         "CLOSERS = ''.join(PAIRS.values())",
-        "TRIPLE = (\"'''\", '\"\"\"')",
-        "SINGLE = (\"'\", '\"\")",
+        "TRIPLE = (\"'''\", '"""')",
+        "SINGLE = ("'", '\"")",
         "",
         "def ast_ok(code: str) -> bool:",
         "    try:",
@@ -239,7 +242,7 @@ tool_py = _join(
         "            if is_py(p):",
         "                yield p",
         "",
-        "def needs_repair(p: Path) -> bool:",
+        "def needs_repair(p: Path) -> bool:\",
         "    try:",
         "        return not ast_ok(read_text(p))",
         "    except Exception:",
@@ -259,7 +262,7 @@ tool_py = _join(
         "def fmt_result(p: Path, ok: bool, applied: Sequence[str]) -> str:",
         "    tag = 'FIXED' if ok else 'FAILED'",
         "    apps = ','.join(applied) if applied else '-'",
-        "    return f"{tag:6} {p} [{apps}]"",
+        "    return f\"{tag:6} {p} [{apps}]\"",
         "",
         "def log(msg: str, *, quiet: bool) -> None:",
         "    if not quiet:",
@@ -277,10 +280,12 @@ tool_py = _join(
         "    pa.add_argument('--dry-run', action='store_true', help='no writes')",
         "",
         "def add_quiet_arg(pa: argparse.ArgumentParser) -> None:",
-        "    pa.add_argument('-q','--quiet', action='store_true', help='silence')",
+        "    pa.add_argument('-q','--quiet', action='store_true',",
+        "                    help='silence')",
         "",
         "def add_selftest_arg(pa: argparse.ArgumentParser) -> None:",
-        "    pa.add_argument('--self-test', action='store_true', help='run tests')",
+        "    pa.add_argument('--self-test', action='store_true',",
+        "                    help='run tests')",
         "",
         "def build_parser() -> argparse.ArgumentParser:",
         "    pa = argparse.ArgumentParser(prog='py-syntax-repair')",
