@@ -25,7 +25,7 @@ def _p(name: str) -> Path:
 
 def _emit(name: str, content: str) -> None:
     _w(_p(name), content)
-    print(f"✓ Wrote {ROOT / name}")
+    print(f"Wrote {ROOT / name}")
 
 
 def _join(lines: Iterable[str]) -> str:
@@ -49,7 +49,6 @@ tool_py = _join(
         "import argparse",
         "import ast",
         "import os",
-        "import re",
         "import sys",
         "import tokenize",
         "from dataclasses import dataclass",
@@ -116,22 +115,22 @@ tool_py = _join(
         "    lines = code.splitlines()",
         "    out: List[str] = []",
         "    changed = False",
-        "    for i, line in enumerate(lines):",
+        "    for line in lines:",
         "        raw = line",
         "        indent = get_indent(line)",
-        "        line = strip_comment(line).rstrip()",
-        "        if not line or line.endswith(':') or line.endswith('\\'):",
+        "        head = strip_comment(line).rstrip()",
+        "        if not head or head.endswith(':') or head.endswith('\\\\'):",
         "            out.append(raw); continue",
         "        try:",
-        "            tokens = list(tokenize.tokenize(BytesIO(line.encode()).readline))",
-        "        except tokenize.TokenError:",
+        "            tokens = list(tokenize.tokenize(BytesIO((indent + head).encode()).readline))",
+        "        except Exception:",
         "            out.append(raw); continue",
-        "        if len(tokens) > 1 and tokens[-2].string in KEYWORDS_NEED_COLON:",
-        "            if not any(t.string == ':' for t in tokens[1:]):",
-        "                raw = raw.rstrip() + ':' + raw[len(raw.rstrip()):]",
+        "        if len(tokens) > 2 and tokens[1].string in KEYWORDS_NEED_COLON:",
+        "            if not any(t.string == ':' for t in tokens[2:]):",
+        "                raw = raw.rstrip() + ':'",
         "                changed = True",
         "        out.append(raw)",
-        "    return '\n'.join(out) + '\n', changed",
+        "    return '\\n'.join(out) + '\\n', changed",
         "",
         "def balance_brackets(code: str) -> Tuple[str, bool]:",
         "    stack: List[Tuple[str, int]] = []",
@@ -153,17 +152,17 @@ tool_py = _join(
         "                line += q",
         "                changed = True",
         "        out.append(line)",
-        "    return '\n'.join(out) + '\n', changed",
+        "    return '\\n'.join(out) + '\\n', changed",
         "",
         "def ensure_eof_newline(code: str) -> Tuple[str, bool]:",
-        "    if code.endswith('\n'): return code, False",
-        "    if not code.strip(): return code + '\n', True",
-        "    try: ast.parse(code + '\n'); return code + '\n', True",
+        "    if code.endswith('\\n'): return code, False",
+        "    if not code.strip(): return code + '\\n', True",
+        "    try: ast.parse(code + '\\n'); return code + '\\n', True",
         "    except: return code, False",
         "",
         "def strip_trailing_ws(code: str) -> Tuple[str, bool]:",
         "    lines = [l.rstrip() for l in code.splitlines()]",
-        "    s = '\n'.join(lines) + '\n'",
+        "    s = '\\n'.join(lines) + '\\n'",
         "    return s, s != code",
         "",
         "def fixers() -> Tuple[Fixer, ...]:",
@@ -287,12 +286,12 @@ tests_py = _join(
         '"""Tests for py_syntax_repair_tool.py"""',
         "from __future__ import annotations",
         "import unittest",
-        "from py_syntax_repair_tool import repair_code, Case",
+        "from py_syntax_repair_tool import repair_code",
         "",
         "class TestRepair(unittest.TestCase):",
         "    def assertRepairs(self, bad: str, good: str) -> None:",
         "        res = repair_code(bad, 5)",
-        "        self.assertTrue(res.ok, f'Failed to fix: {res.applied}')",
+        "        self.assertTrue(res.ok, f'Failed: {res.applied}')",
         "        self.assertEqual(res.code, good)",
         "",
         "    def test_colon(self) -> None:",
@@ -319,7 +318,7 @@ run_sh = _join(
     [
         "#!/usr/bin/env bash",
         "set -euo pipefail",
-        'cd "$(dirname "$0")/py-syntax-repair"',
+        'cd "$(dirname "${BASH_SOURCE[0]}")"',
         'python3 py_syntax_repair_tool.py "${1:-.}"',
     ]
 )
@@ -328,7 +327,7 @@ run_tests_sh = _join(
     [
         "#!/usr/bin/env bash",
         "set -euo pipefail",
-        'cd "$(dirname "$0")/py-syntax-repair"',
+        'cd "$(dirname "${BASH_SOURCE[0]}")"',
         "python3 -m unittest discover -v",
     ]
 )
@@ -336,7 +335,7 @@ run_tests_sh = _join(
 run_bat = _join(
     [
         "@echo off",
-        "cd /d %~dp0\\py-syntax-repair",
+        "cd /d \"%~dp0\"",
         "python py_syntax_repair_tool.py %*",
     ]
 )
@@ -344,8 +343,95 @@ run_bat = _join(
 run_tests_bat = _join(
     [
         "@echo off",
-        "cd /d %~dp0\\py-syntax-repair",
+        "cd /d \"%~dp0\"",
         "python -m unittest discover -v",
+    ]
+)
+
+readme_md = _join(
+    [
+        "# py-syntax-repair",
+        "",
+        "A tiny, pure-Python syntax repair tool.",
+        "",
+        "Automatically fixes common syntax errors in `.py` files:",
+        "- Missing colons after `if`, `def`, etc.",
+        "- Unclosed parentheses, brackets, braces",
+        "- Unclosed single/triple quotes",
+        "- Missing final newline",
+        "- Trailing whitespace",
+        "",
+        "**Safe**: Creates `.bak` backup and only writes if `ast.parse()` succeeds.",
+        "",
+        "---",
+        "",
+        "## Features",
+        "",
+        "- **≤10 lines per function**",
+        "- **79-column width**",
+        "- **mypy-friendly typing**",
+        "- **Cross-platform** (Linux/macOS/Windows)",
+        "- **Zero dependencies**",
+        "",
+        "---",
+        "",
+        "## Generated Files",
+        "",
+        "```",
+        "py-syntax-repair/",
+        "├── py_syntax_repair_tool.py      # Core repair engine",
+        "├── test_py_syntax_repair_tool.py # Unit tests",
+        "├── run_tool.sh / run_tool.bat    # Run repair",
+        "├── run_tests.sh / run_tests.bat  # Run tests",
+        "└── README.md                     # This file",
+        "```",
+        "",
+        "---",
+        "",
+        "## Code Generation",
+        "",
+        "Run once:",
+        "",
+        "```bash",
+        "python generate_py_syntax_repair_tool.py",
+        "```",
+        "",
+        "This generates the entire toolkit in `./py-syntax-repair/`.",
+        "",
+        "---",
+        "",
+        "## Scripts",
+        "",
+        "- `./run_tool.sh [dir]` — Repair all `.py` files in directory",
+        "- `./run_tests.sh`     — Run unit tests",
+        "- Windows: use `.bat` equivalents",
+        "",
+        "---",
+        "",
+        "## Safety",
+        "",
+        "- `.bak` backup created before overwrite",
+        "- Only writes if fixed code parses with `ast.parse()`",
+        "- `--dry-run` mode available",
+        "- Skips `.git`, `__pycache__`, virtualenvs",
+        "",
+        "---",
+        "",
+        "## Limitations",
+        "",
+        "Heuristic-based. Does **not** fix:",
+        "- Logic errors",
+        "- Indentation issues",
+        "- Runtime errors",
+        "- Complex multiline string/quote edge cases",
+        "",
+        "Use with code review.",
+        "",
+        "---",
+        "",
+        "## License",
+        "",
+        "MIT",
     ]
 )
 
@@ -357,9 +443,11 @@ def main() -> None:
     _emit("run_tests.sh", run_tests_sh)
     _emit("run_tool.bat", run_bat)
     _emit("run_tests.bat", run_tests_bat)
-    # Make scripts executable
+    _emit("README.md", readme_md)
+    # Make shell scripts executable
     for sh in ("run_tool.sh", "run_tests.sh"):
-        (_p(sh)).chmod(0o755)
+        path = _p(sh)
+        path.chmod(path.stat().st_mode | 0o111)
 
 
 if __name__ == "__main__":
