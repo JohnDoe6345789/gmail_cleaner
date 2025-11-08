@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 """
 Codegen for a tiny, pure Python syntax repair toolkit.
-- Generates two files inside ./py-syntax-repair/ :
-  1) py_syntax_repair_tool.py        (the tool)
-  2) test_py_syntax_repair_tool.py   (unit tests, unittest stdlib)
+- Generates files inside ./py-syntax-repair/ :
+  - py_syntax_repair_tool.py
+  - test_py_syntax_repair_tool.py
+  - run_tool.sh / run_tests.sh
+  - run_tool.bat / run_tests.bat
 - All functions ≤10 lines, 79 cols, mypy-friendly typing.
 - Usage: python generate_py_syntax_repair_tool.py
 """
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable
 
 # ------------------------------- Utilities -------------------------------- #
 
@@ -82,13 +84,13 @@ tool_py = _join(
         "# ------------------------------- IO ---------------------------------- #",
         "",
         "def read_text(p: Path) -> str:",
-        "    return p.read_text(encoding=\"utf-8\", errors=\"surrogatepass\")",
+        "    return p.read_text(encoding='utf-8', errors='surrogatepass')",
         "",
         "def write_text(p: Path, s: str) -> None:",
-        "    p.write_text(s, encoding=\"utf-8\")",
+        "    p.write_text(s, encoding='utf-8')",
         "",
         "def backup_path(p: Path) -> Path:",
-        "    return p.with_suffix(p.suffix + \".bak\")",
+        "    return p.with_suffix(p.suffix + '.bak')",
         "",
         "def copy_backup(src: Path) -> Path:",
         "    dst = backup_path(src)",
@@ -101,13 +103,13 @@ tool_py = _join(
         "    return s.splitlines()",
         "",
         "def join_lines(xs: Iterable[str]) -> str:",
-        "    return \"\\n\".join(xs) + \"\\n\"",
+        "    return '\n'.join(xs) + '\n'",
         "",
         "def trailing_newline(s: str) -> str:",
-        "    return s if s.endswith(\"\\n\") else s + \"\\n\"",
+        "    return s if s.endswith('\n') else s + '\n'",
         "",
         "def rstrip_nl(s: str) -> str:",
-        "    return s[:-1] if s.endswith(\"\\n\") else s",
+        "    return s[:-1] if s.endswith('\n') else s",
         "",
         "# ----------------------------- Heuristics ----------------------------- #",
         "",
@@ -119,8 +121,8 @@ tool_py = _join(
         "PAIRS = {'(': ')', '[': ']', '{': '}'}",
         "OPENERS = ''.join(PAIRS.keys())",
         "CLOSERS = ''.join(PAIRS.values())",
-        "TRIPLE = (\"'''\", '"""')",
-        "SINGLE = ("'", '\"")",
+        "TRIPLE = ("""'''""", '"""')",
+        "SINGLE = ("'", '"')",
         "",
         "def ast_ok(code: str) -> bool:",
         "    try:",
@@ -220,7 +222,8 @@ tool_py = _join(
         "        res = apply_fixes_once(cur)",
         "        applied_all.extend(res.applied)",
         "        if res.ok or not res.applied:",
-        "            return RepairResult(res.ok, res.code, tuple(applied_all))",
+        "            return RepairResult(res.ok, res.code,",
+        "                               tuple(applied_all))",
         "        cur = res.code",
         "        step += 1",
         "    return RepairResult(False, cur, tuple(applied_all))",
@@ -242,7 +245,7 @@ tool_py = _join(
         "            if is_py(p):",
         "                yield p",
         "",
-        "def needs_repair(p: Path) -> bool:\",
+        "def needs_repair(p: Path) -> bool:",
         "    try:",
         "        return not ast_ok(read_text(p))",
         "    except Exception:",
@@ -262,7 +265,7 @@ tool_py = _join(
         "def fmt_result(p: Path, ok: bool, applied: Sequence[str]) -> str:",
         "    tag = 'FIXED' if ok else 'FAILED'",
         "    apps = ','.join(applied) if applied else '-'",
-        "    return f\"{tag:6} {p} [{apps}]\"",
+        "    return f"""{tag:6} {p} [{apps}]"""",
         "",
         "def log(msg: str, *, quiet: bool) -> None:",
         "    if not quiet:",
@@ -271,13 +274,16 @@ tool_py = _join(
         "# --------------------------------- CLI -------------------------------- #",
         "",
         "def add_dir_arg(pa: argparse.ArgumentParser) -> None:",
-        "    pa.add_argument('dir', nargs='?', default='.', help='root directory')",
+        "    pa.add_argument('dir', nargs='?', default='.',",
+        "                    help='root directory')",
         "",
         "def add_limit_arg(pa: argparse.ArgumentParser) -> None:",
-        "    pa.add_argument('--limit', type=int, default=5, help='max passes')",
+        "    pa.add_argument('--limit', type=int, default=5,",
+        "                    help='max passes')",
         "",
         "def add_dry_arg(pa: argparse.ArgumentParser) -> None:",
-        "    pa.add_argument('--dry-run', action='store_true', help='no writes')",
+        "    pa.add_argument('--dry-run', action='store_true',",
+        "                    help='no writes')",
         "",
         "def add_quiet_arg(pa: argparse.ArgumentParser) -> None:",
         "    pa.add_argument('-q','--quiet', action='store_true',",
@@ -298,7 +304,8 @@ tool_py = _join(
         "",
         "def cases() -> Tuple[Case, ...]:",
         "    return (",
-        "        Case('colon_if', 'if True\\n    pass', 'if True:\\n    pass\\n'),",
+        "        Case('colon_if', 'if True\\n    pass',",
+        "             'if True:\\n    pass\\n'),",
         "        Case('paren', 'x = (1+2\\n', 'x = (1+2)\\n'),",
         "        Case('triple', \"s = '''abc\\n\", \"s = '''abc'''\\n\"),",
         "        Case('single', \"s = 'a\\n\", \"s = 'a'\\n\"),",
@@ -387,11 +394,52 @@ tests_py = _join(
 )
 
 
+run_sh = _join(
+    [
+        "#!/usr/bin/env bash",
+        "set -euo pipefail",
+        "cd \"$(dirname \"$0\")/py-syntax-repair\"",
+        "python3 py_syntax_repair_tool.py \"${1:-.}\"",
+    ]
+)
+
+run_tests_sh = _join(
+    [
+        "#!/usr/bin/env bash",
+        "set -euo pipefail",
+        "cd \"$(dirname \"$0\")/py-syntax-repair\"",
+        "python3 -m unittest -v test_py_syntax_repair_tool.py",
+    ]
+)
+
+run_bat = _join(
+    [
+        "@echo off",
+        "setlocal enabledelayedexpansion",
+        "cd /d %~dp0\\py-syntax-repair",
+        "python py_syntax_repair_tool.py %1",
+    ]
+)
+
+run_tests_bat = _join(
+    [
+        "@echo off",
+        "setlocal enabledelayedexpansion",
+        "cd /d %~dp0\\py-syntax-repair",
+        "python -m unittest -v test_py_syntax_repair_tool.py",
+    ]
+)
+
+
 # --------------------------------- Main ---------------------------------- #
 
 def main() -> None:
     _emit("py_syntax_repair_tool.py", tool_py)
     _emit("test_py_syntax_repair_tool.py", tests_py)
+    _emit("run_tool.sh", run_sh)
+    _emit("run_tests.sh", run_tests_sh)
+    _emit("run_tool.bat", run_bat)
+    _emit("run_tests.bat", run_tests_bat)
 
 
 if __name__ == "__main__":
