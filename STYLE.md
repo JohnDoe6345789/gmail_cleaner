@@ -22,3 +22,4 @@
 * Pave the way for future features, plugin systems?
 * Programmers are egotistical because they are annoyed with fixing other peoples poorly written code.
 * Things like PEP8 are a great thing, lets have more of that.
+* Logging is a brilliant thing, put it everywhere. I also like progress bars and things on CLI apps.
