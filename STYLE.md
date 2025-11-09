@@ -23,3 +23,4 @@
 * Programmers are egotistical because they are annoyed with fixing other peoples poorly written code.
 * Things like PEP8 are a great thing, lets have more of that.
 * Logging is a brilliant thing, put it everywhere. I also like progress bars and things on CLI apps.
+* Put as much as you like into 1 pull request, I dont mind.
