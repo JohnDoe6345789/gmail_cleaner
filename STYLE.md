@@ -1,26 +1,27 @@
-* Follow all industry coding best practices.
-* Functions do one thing.
-* Files do one thing.
-* Every function has a docstring.
-* Every file has a docstring.
-* Every variable name describes what it does.
-* It should be obvious how it works.
-* I should not have to scroll my screen to read a function, like <10 loc per function.
-* A bunch of related functions should probably go in a class.
-* Use common sense when coding.
-* No more than 79 chars per line.
-* Leave nothing undocumented.
-* Leave no code untested.
-* Put test result output in its own markdown file.
-* Don't make folders in the project, create a SINGLE FILE project structure python codegen. Makes it easy to paste it into a AI chatbot. Single file codegen outputs all files in project. This codegen thing is the only time you can spam one file with masses of junk. If the codegen file is too big to paste into one AI chat box, you could split it. Everything stuffed in the codegen to the point where this repo is <3 files unless said splitting is required. I am asking to create a code generator, this bullet point does not affect the production code, the production code should just be pasted inside the code generator.
-* Project as it is might not fit this guide, fix it.
-* Remove duplicate code from this repo.
-* Make everything well and good and proper, people have to read this stuff.
-* All usual standard files (varies from language to language) - README.md, LICENCE.md, setup.py, requirements.txt, run.sh, run.bat, setup.sh, setup.bat
-* This is a not for profit research project intended for personal use - But I try to put a MIT licence on it so you can do what you wish.
-* Innovate as much as possible.
-* Pave the way for future features, plugin systems?
-* Programmers are egotistical because they are annoyed with fixing other peoples poorly written code.
-* Things like PEP8 are a great thing, lets have more of that.
-* Logging is a brilliant thing, put it everywhere. I also like progress bars and things on CLI apps.
-* Put as much as you like into 1 pull request, I dont mind.
+# Style Guide
+
+## Core Principles
+- Follow established industry best practices and use sound engineering judgment.
+- Keep functions focused on a single responsibility and limit their length to roughly ten lines when practical.
+- Group related behavior in classes or modules so each file has a clear purpose.
+- Ensure the code is easy to read and understand without guesswork.
+
+## Naming, Structure, and Documentation
+- Give variables, functions, and classes descriptive names that convey their intent.
+- Provide docstrings for every module and function, outlining behavior, inputs, and outputs.
+- Keep line length within 79 characters.
+- Favor clear logging and progress indicators for CLI tools.
+
+## Testing and Verification
+- Maintain comprehensive automated tests for new or modified behavior.
+- Record test results in a dedicated Markdown file when sharing execution logs.
+
+## Project Layout and Tooling
+- Avoid introducing new top-level directories unless absolutely necessary; prefer a compact structure.
+- Supply standard project metadata files as needed (for example: `README.md`, `LICENSE`, `setup.py`, `requirements.txt`, `run.sh`, `run.bat`, `setup.sh`, `setup.bat`).
+- Consolidate code-generation utilities into a single file when generating project scaffolding so outputs remain easy to share.
+
+## Continuous Improvement
+- Remove duplication wherever possible and strive for maintainable, extensible solutions.
+- Document design decisions that enable future enhancements, such as plugin systems.
+- Treat every contribution as production-quality work—clear, well-tested, and ready for others to build upon.
